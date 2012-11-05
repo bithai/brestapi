@@ -11,10 +11,12 @@ abstract class BRestController extends CExtController
 { 
     public $restRequest;
     public $restResponse;
+    public $restRequestValidator;
 
     protected $modelName = '';
     
     protected $responseClass;
+    protected $restRequestValidatorClass;
     
     public function init()
     {
@@ -23,14 +25,26 @@ abstract class BRestController extends CExtController
         // may want to abstract out the BRestRequest to handle OAuthRequest in future
         $this->restRequest = new BRestRequest();
         $this->restRequest->initRequestParams();
-        
+
         // by default, we'll load the Response class based on the format
         // so if response format is 'json', then response class is "JsonResponse"
         if(!$this->responseClass) {
             $this->responseClass = ucfirst($this->restRequest->getFormat()).'Response';
-        }
-        
+        }  
 		$this->restResponse = BRestResponse::getRestResponse($this->responseClass);
+        
+                
+    
+        // initialize restRequestValidator class
+        if(!$this->restRequestValidatorClass) {
+            $this->restRequestValidatorClass = "SimpleKeySecretValidator";
+        } 
+        $this->restRequestValidator = BRestRequest::getRequestValidator($this->restRequestValidatorClass);
+        $this->restRequestValidator->run();
+        
+        
+        
+        error_log(print_r($this->restRequest->getParams(), true));
 
 		return parent::init();
 	}

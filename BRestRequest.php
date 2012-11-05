@@ -29,6 +29,16 @@ class BRestRequest
 
 	}
     
+    /**
+	 * Return an instance of BRestResponse
+	 * @param string $type
+	 * @return BRestResponse
+	 */
+	public static function getRequestValidator($className)
+	{
+		return new $className();
+    }
+    
     public function getParams() 
     {
         return $this->_params;
@@ -92,8 +102,6 @@ class BRestRequest
 		if($contentType == 'application/json'){
 			$requestBody = file_get_contents("php://input");
 			$this->_params = array_merge((array)json_decode($requestBody), $this->_params);
-            
-            error_log(print_r($this->_params, true));
 		}
 		return $this->_params;
 	}
