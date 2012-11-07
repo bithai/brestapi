@@ -29,6 +29,16 @@ class BRestRequest
 
 	}
     
+    /**
+	 * Return an instance of BRestResponse
+	 * @param string $type
+	 * @return BRestResponse
+	 */
+	public static function getRequestValidator($className)
+	{
+		return new $className();
+    }
+    
     public function getParams() 
     {
         return $this->_params;
@@ -55,11 +65,10 @@ class BRestRequest
     
     public function initRestParams()
     {
+        $_params = $_REQUEST;
         if(Yii::app()->request->getIsPutRequest() || Yii::app()->request->getIsDeleteRequest()) {
-            $_params = $this->getRestParams();
-        }
-        else {
-            $_params = $_REQUEST;
+           
+            $_params = array_merge($_params, $this->getRestParams());
         }
         
         $this->_params = array_merge($this->_params, $_params);
@@ -84,28 +93,33 @@ class BRestRequest
     
 
 	public function parseJsonParams(){
+	    // if content type is not set, just return
 		if(!isset($_SERVER['CONTENT_TYPE'])){
 			return $this->_params;
 		}
+		
 		
 		$contentType = strtok($_SERVER['CONTENT_TYPE'], ';');
 		if($contentType == 'application/json'){
 			$requestBody = file_get_contents("php://input");
 			$this->_params = array_merge((array)json_decode($requestBody), $this->_params);
-            
-            error_log(print_r($this->_params, true));
 		}
 		return $this->_params;
 	}
 
     
+    /**
+     * Set param
+     * @param type $key
+     * @param type $value 
+     */
     public function setParam($key, $value)
     {
         $this->_params[$key] = $value;
     }
     
 	/**
-     *
+     * Get param
      * @param type $name
      * @param type $defaultValue
      * @return type 
@@ -115,7 +129,6 @@ class BRestRequest
         $param = isset($this->_params[$key]) ? $this->_params[$key] : null;
 		return $param ? $param : $defaultValue;
 	}
-
 
 
 }

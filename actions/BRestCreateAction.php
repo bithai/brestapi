@@ -12,15 +12,13 @@ class BRestCreateAction extends CAction
 
 	public function run()
 	{
-		$requestAttributes = $this->getController()->restRequest->getParams();
+        $requestAttributes = Yii::app()->getController()->restRequest->getParams();
+		$model = $this->controller->getModel($this->scenario);
 
-        // need support scenarios...
-		$model = $this->controller->getModel();
-
-		$params = $model->getAttributes();
+		$attributesList = $model->getCreateAttributes();
 
 		$attributes = array();
-		foreach ($params as $key => $value) {
+		foreach ($attributesList as $key) {
 			if (isset($requestAttributes[$key])) {
 				$attributes[$key] = $requestAttributes[$key];
 			}
@@ -29,7 +27,7 @@ class BRestCreateAction extends CAction
 		$model->setAttributes($attributes);
 
 		if ($model->save()) {
-			$this->getController()->restResponse->sendResponse(200, $model->getAllAttributes());
+			$this->getController()->restResponse->sendResponse(200, $model->getAttributesForResponse());
 		} else {
 			$this->getController()->restResponse->sendResponse(400, array('errors' => $model->getErrors()));
 		}

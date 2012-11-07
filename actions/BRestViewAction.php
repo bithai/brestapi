@@ -11,7 +11,7 @@ class BRestViewAction extends CAction
 	public function run()
 	{
 		$model = $this->getController()->getModel();
-		$this->getController()->restResponse->sendResponse(200, $model->getAttributes());
+		$this->getController()->restResponse->sendResponse(200, $model->getAttributesForResponse());
 	}
 
 }

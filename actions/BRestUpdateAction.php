@@ -12,25 +12,24 @@ class BRestUpdateAction extends CAction
 
 	public function run()
 	{
-		$requestAttributes = $this->getController()->restRequest->getParams();
+        
+        $requestAttributes = Yii::app()->getController()->restRequest->getParams();
+		$model = $this->controller->getModel($this->scenario);
 
-        // probably would need to support model and validator scenarios
-        // so that only allowed attributes can be saved...
-		$model = $this->getController()->getModel();
+		$attributesList = $model->getUpdateAttributes();
 
-        $params = $model->getAttributes();
-
-        $attributes = array();
-		foreach ($params as $key => $value) {
+		$attributes = array();
+		foreach ($attributesList as $key) {
 			if (isset($requestAttributes[$key])) {
 				$attributes[$key] = $requestAttributes[$key];
 			}
 		}
+        
 
 		$model->setAttributes($attributes);
-
+ 
 		if ($model->save()) {
-			$this->getController()->restResponse->sendResponse(200, $model->getAllAttributes());
+			$this->getController()->restResponse->sendResponse(200, $model->getAttributesForResponse());
 		} else {
 			$this->getController()->restResponse->sendResponse(400, array('errors' => $model->getErrors()));
 		}

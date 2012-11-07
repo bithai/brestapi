@@ -59,7 +59,7 @@ class BRestListAction extends CAction
 		$result = array();
 		if ($models) {
 			foreach ($models as $item) {
-				$result[] = $item->getAttributes();
+				$result[] = $item->getAttributesForResponse();
 			}
 		}
         

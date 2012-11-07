@@ -42,13 +42,13 @@ abstract class BRestResponse
 		$codes = Array(
             
 			200 => array('title' => 'OK',               'message' => 'OK'),
-            201 => array('title' => 'Created'),
-            204 => array('title' => 'No Content'),
+            201 => array('title' => 'Created',          'message' => 'Created'),
+            204 => array('title' => 'No Content',       'message' => 'Updated'),
 			400 => array('title' => 'Bad Request',      'message' => 'Bad Service Request'),
 			401 => array('title' => 'Unauthorized',     'message' => 'Unauthorized Service Request'),
 			403 => array('title' => 'Forbidden',        'message' => 'Service Forbidden'),
 			404 => array('title' => 'Not Found',        'message' => 'Service Url Not Found'),
-            405 => array('title' => 'Method Not Allowed'),
+            405 => array('title' => 'Method Not Allowed','message' => 'Method Not Allowed'),
 			500 => array('title' => 'Internal Server Error',    'message' => 'The server encountered an error processing your request.'),
 			501 => array('title' => 'Not Implemented',  'message' => 'The service requested method is not implemented.'),
 		);
@@ -100,11 +100,13 @@ abstract class BRestResponse
 		return $headers;
 	}
     
-    /**
-	 *
-	 * @param string $status
-	 * @return WRestResponse
-	 */
+
+    
+    
+    
+    
+    
+    
 	public function setStatus($status)
 	{
 		$this->status = $status;
