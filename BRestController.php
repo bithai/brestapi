@@ -41,7 +41,7 @@ abstract class BRestController extends CExtController
         } 
         $this->restRequestValidator = BRestRequest::getRequestValidator($this->restRequestValidatorClass);
         $this->restRequestValidator->run();
-        
+
 		return parent::init();
 	}
 
