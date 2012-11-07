@@ -75,7 +75,7 @@ abstract class BRestController extends CExtController
 		if ($id) {
 			$model = $modelName::model()->findByPk($id);
 			if (!$model) {
-				$this->sendResponse(404);
+		        $this->restResponse->sendResponse(404);
 			}
 		} else {
 			$model = new $modelName();
