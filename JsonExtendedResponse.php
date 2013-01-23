@@ -8,45 +8,21 @@
 class JsonExtendedResponse extends BRestResponse
 {
 
-    protected $resultsKey = 'results';
+    public $resultsNode = 'results';
     
 	public function getContentType()
 	{
 		return "application/json";
 	}
 
-	public function setBodyParams($params = array(), $metaParams = array())
-	{
-        $response = array();
-        // return the time that this data is generated for future scenario
-        // where we support caching.
+	public function setBodyParams($params = array())
+	{   
         $response['time'] = date("r",time());
-        
-        // we want to return the results always as an array even if its 
-        // for a single record.  This seems more consistent for clients
-        if(!$this->isMulti($params)) {
-            $params = array($params);
-        }
-      
-        // merge in the metaParams
-        $response = array_merge($response, $metaParams);
-   
-        // set the actual results params
-        $response[$this->resultsKey] = $params;   
-       
+        $response = CMap::mergeArray($response, $params);
+
 		$this->body = CJSON::encode($response);
 		return $this;
 	}
-    
-    /**
-     * Checks if an array is a multi dimensional array
-     * @param type $array
-     * @return type 
-     */
-    public function isMulti($array) 
-    {
-        return (count($array) != count($array, 1));
-    }
         
 }
 

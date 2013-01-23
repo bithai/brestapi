@@ -20,6 +20,7 @@ abstract class BRestController extends CExtController
     
     public function init()
     {
+        
 		$this->modelName = ucfirst($this->modelName);
 
         // may want to abstract out the BRestRequest to handle OAuthRequest in future
@@ -41,6 +42,10 @@ abstract class BRestController extends CExtController
         } 
         $this->restRequestValidator = BRestRequest::getRequestValidator($this->restRequestValidatorClass);
         $this->restRequestValidator->run();
+        
+        
+        
+        error_log(print_r($this->restRequest->getParams(), true));
 
 		return parent::init();
 	}
@@ -56,8 +61,17 @@ abstract class BRestController extends CExtController
         $this->restRequestValidatorClass = $validatorClass;
     }
     
+    public function getRestRequest()
+    {
+        return $this->restRequest;
+    }
     
-	    /**
+    public function getRestResponse()
+    {
+        return $this->restResponse;
+    }
+
+    /**
      * Returns the model defined in controller resource
      * @param type $scenario
      * @return CActiveRecord model
@@ -75,7 +89,7 @@ abstract class BRestController extends CExtController
 		if ($id) {
 			$model = $modelName::model()->findByPk($id);
 			if (!$model) {
-		        $this->restResponse->sendResponse(404);
+				$this->restResponse->sendResponse(404);
 			}
 		} else {
 			$model = new $modelName();
@@ -85,7 +99,6 @@ abstract class BRestController extends CExtController
         
 		return $model;
 	}
-
 
 
 

@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2012 Truong-An Thai
  * 
  */
-class BRestListAction extends CAction
+class BRestListAction extends BRestAction
 {
 
     public $fields = array();
@@ -13,45 +13,34 @@ class BRestListAction extends CAction
 	public $limit = 'limit';
 	public $order = 'order';
     public $offset = 'offset';
-    
+    public $total = 'total';
     
 
-
-    /**
-     * This method can be called by the run method for list type actions
-     * to initialize some common param options
-     */
-    public function initCommonListParamOptions()
-    {
-        
-        $restRequest = $this->getController()->restRequest;
-        $restRequest->setParam($this->limit, $restRequest->getParam($this->limit, 30));
-        $restRequest->setParam($this->offset, $restRequest->getParam($this->offset, 0));
-        $restRequest->setParam($this->order, $restRequest->getParam($this->order, null));
-
-    }
-    
 	public function run()
 	{
 
-        // initialize options
+        // initialize common list options
         $this->initCommonListParamOptions();
         
-        $requestParams = $this->getController()->restRequest->getParams();
+        // call parent run
+        parent::run();
+        
+        $requestParams = $this->restParams;
         
 		$c = new CDbCriteria();
 
 		foreach ($this->filterBy as $key => $val) {
 			if (!is_null(Yii::app()->request->getParam($val)))
+            {   
 				$c->compare($key, Yii::app()->request->getParam($val));
-		}
-
+            }
+        }
 
 		$model = $this->getController()->getModel();
      
-        $c->limit = $requestParams['limit'];
-        $c->offset = $requestParams['offset'];
-		$c->order = $requestParams['order'] ? $requestParams['order'] : $model->getMetaData()->tableSchema->primaryKey;
+        $c->limit = $requestParams[$this->limit];
+        $c->offset = $requestParams[$this->offset];
+		$c->order = $requestParams[$this->order] ? $requestParams[$this->order] : $model->getMetaData()->tableSchema->primaryKey;
 
 		$models = $model->findAll($c);
         $total = $model->count($c);
@@ -63,11 +52,15 @@ class BRestListAction extends CAction
 			}
 		}
         
-        $metaParams['total'] = $total;
-        $metaParams['limit'] = $requestParams['limit'];
-        $metaParams['offset'] = $requestParams['offset'];
+        // init results meta
+        $metaParams = $this->buildListMetaResults($total, $requestParams[$this->limit], $requestParams[$this->offset]);
         
-		$this->getController()->restResponse->sendResponse(200, $result, $metaParams);
+        // init results array with a node
+        $responseParams[$this->restResponse->resultsNode] = $result;
+        // merge array with meta then results data
+        $responseParams = array_merge($metaParams, $responseParams);
+        
+		$this->restResponse->sendResponse(200, $responseParams);
     }
     
 

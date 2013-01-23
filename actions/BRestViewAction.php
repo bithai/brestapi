@@ -5,13 +5,16 @@
  * @copyright Copyright (c) 2012 Truong-An Thai
  * 
  */
-class BRestViewAction extends CAction
+class BRestViewAction extends BRestAction
 {
 
 	public function run()
 	{
+        parent::run();
+        
 		$model = $this->getController()->getModel();
-		$this->getController()->restResponse->sendResponse(200, $model->getAttributesForResponse());
+        $responseParams[$this->restResponse->resultsNode] = array($model->getAttributesForResponse());
+		$this->restResponse->sendResponse(200, $responseParams);
 	}
 
 }

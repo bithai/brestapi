@@ -5,14 +5,15 @@
  * @copyright Copyright (c) 2012 Truong-An Thai
  * 
  */
-class BRestCreateAction extends CAction
+class BRestCreateAction extends BRestAction
 {
-
 	public $scenario = '';
 
 	public function run()
 	{
-        $requestAttributes = Yii::app()->getController()->restRequest->getParams();
+        parent::run();
+        
+        $requestAttributes = $this->restParams;
 		$model = $this->controller->getModel($this->scenario);
 
 		$attributesList = $model->getCreateAttributes();
@@ -23,13 +24,14 @@ class BRestCreateAction extends CAction
 				$attributes[$key] = $requestAttributes[$key];
 			}
 		}
-		
+        
 		$model->setAttributes($attributes);
 
 		if ($model->save()) {
-			$this->getController()->restResponse->sendResponse(200, $model->getAttributesForResponse());
+            $responseParams[$this->restResponse->resultsNode] = array($model->getAttributesForResponse());
+            $this->restResponse->sendResponse(200, $responseParams);
 		} else {
-			$this->getController()->restResponse->sendResponse(400, array('errors' => $model->getErrors()));
+			$this->restResponse->sendResponse(400, array('errors' => $model->getErrors()));
 		}
 	}
 

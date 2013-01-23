@@ -9,10 +9,12 @@ abstract class BRestResponse
 {
 	protected $body = '';
 	protected $status = 200;
+    
+    public $resultsNode = 'results';
 
 	public abstract function getContentType();
 
-	public abstract function setBodyParams($resultsParams = array(), $metaParams = array());
+	public abstract function setBodyParams($results = array());
 
 
 	/**
@@ -37,13 +39,13 @@ abstract class BRestResponse
      * @param type $outputType
      * @return array 
      */
-	public function getStatusCodeMessage($status,$outputType='title')
+	public function getHttpStatusCodeMessage($status,$outputType='title')
 	{
 		$codes = Array(
             
 			200 => array('title' => 'OK',               'message' => 'OK'),
             201 => array('title' => 'Created',          'message' => 'Created'),
-            204 => array('title' => 'No Content',       'message' => 'Updated'),
+            204 => array('title' => 'No Content',       'message' => 'No Content'),
 			400 => array('title' => 'Bad Request',      'message' => 'Bad Service Request'),
 			401 => array('title' => 'Unauthorized',     'message' => 'Unauthorized Service Request'),
 			403 => array('title' => 'Forbidden',        'message' => 'Service Forbidden'),
@@ -76,9 +78,8 @@ abstract class BRestResponse
 	public function getErrorMessage($status){
 		return array(
             'status' => $status,
-			'code' => $status,
-			'title' => $this->getStatusCodeMessage($status,'title'),
-			'message' => $this->getStatusCodeMessage($status,'message'),
+			'title' => $this->getHttpStatusCodeMessage($status,'title'),
+			'message' => $this->getHttpStatusCodeMessage($status,'message'),
 		);
 	}
 
@@ -91,7 +92,7 @@ abstract class BRestResponse
 		$status = $this->status;
         
 		// set the status
-		$statusHeader = 'HTTP/1.1 ' . $status . ' ' . $this->getStatusCodeMessage($status,'title');
+		$statusHeader = 'HTTP/1.1 ' . $status . ' ' . $this->getHttpStatusCodeMessage($status,'title');
 		$headers[] = $statusHeader;
         
 		// and the content type
@@ -101,9 +102,6 @@ abstract class BRestResponse
 	}
     
 
-    
-    
-    
     
     
     
@@ -133,16 +131,17 @@ abstract class BRestResponse
      * 
      * 
      */
-	public function sendResponse($status = 200, $resultsParams = array(), $metaParams = array())
+	public function sendResponse($status = 200, $results = array())
 	{
+        
 		if ($status != 200) {
-			$resultsParams = CMap::mergeArray($resultsParams, $this->getErrorMessage($status));
+			$results = CMap::mergeArray($this->getErrorMessage($status), $results);
 		}
  
 		$this->setStatus($status);
 		$this->sendHeaders();
     
-		$body = $this->setBodyParams($resultsParams,$metaParams)->getBody();
+		$body = $this->setBodyParams($results)->getBody();
              
         echo $body;
 		Yii::app()->end();
