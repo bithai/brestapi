@@ -17,19 +17,19 @@ class BRestCreateAction extends BRestAction
 		$model = $this->controller->getModel($this->scenario);
 
 		$attributesList = $model->getCreateAttributes();
-
+   
 		$attributes = array();
 		foreach ($attributesList as $key) {
 			if (isset($requestAttributes[$key])) {
 				$attributes[$key] = $requestAttributes[$key];
 			}
 		}
-        
+
 		$model->setAttributes($attributes);
 
 		if ($model->save()) {
             $responseParams[$this->restResponse->resultsNode] = array($model->getAttributesForResponse());
-            $this->restResponse->sendResponse(200, $responseParams);
+            $this->restResponse->sendResponse(201, $responseParams);
 		} else {
 			$this->restResponse->sendResponse(400, array('errors' => $model->getErrors()));
 		}

@@ -43,10 +43,7 @@ abstract class BRestController extends CExtController
         $this->restRequestValidator = BRestRequest::getRequestValidator($this->restRequestValidatorClass);
         $this->restRequestValidator->run();
         
-        
-        
-        error_log(print_r($this->restRequest->getParams(), true));
-
+ 
 		return parent::init();
 	}
 
@@ -76,7 +73,7 @@ abstract class BRestController extends CExtController
      * @param type $scenario
      * @return CActiveRecord model
      */
-    public function getModel($scenario = '')
+    public function getModel($scenario = '', CDbCriteria $criteria = null)
 	{
 		$id = Yii::app()->request->getParam('id');
 		$modelName = ucfirst($this->modelName);
@@ -87,7 +84,7 @@ abstract class BRestController extends CExtController
 		}
 
 		if ($id) {
-			$model = $modelName::model()->findByPk($id);
+			$model = $modelName::model()->findByPk($id, $criteria);
 			if (!$model) {
 				$this->restResponse->sendResponse(404);
 			}
@@ -97,6 +94,15 @@ abstract class BRestController extends CExtController
 		if ($scenario && $model)
 			$model->setScenario($scenario);
         
+		return $model;
+	}
+
+
+
+}
+    
+    
+       
 		return $model;
 	}
 

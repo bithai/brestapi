@@ -32,7 +32,7 @@ class BRestListAction extends BRestAction
 		foreach ($this->filterBy as $key => $val) {
 			if (!is_null(Yii::app()->request->getParam($val)))
             {   
-				$c->compare($key, Yii::app()->request->getParam($val));
+				$c->compare($key, Yii::app()->request->getParam($val), true);
             }
         }
 

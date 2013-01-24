@@ -91,23 +91,25 @@ class BRestRequest
     
     
     
-
+    /**
+     * This supports getting body input where content type is "Content-Type: application/json"
+     * @return type 
+     */
 	public function parseJsonParams(){
-	    // if content type is not set, just return
+        
+        // if content type is not set, just return
 		if(!isset($_SERVER['CONTENT_TYPE'])){
 			return $this->_params;
 		}
 		
-		
 		$contentType = strtok($_SERVER['CONTENT_TYPE'], ';');
 		if($contentType == 'application/json'){
 			$requestBody = file_get_contents("php://input");
-			$this->_params = array_merge((array)json_decode($requestBody), $this->_params);
+			$this->_params = array_merge((array)json_decode($requestBody, true), $this->_params);
 		}
 		return $this->_params;
 	}
 
-    
     /**
      * Set param
      * @param type $key
@@ -129,6 +131,7 @@ class BRestRequest
         $param = isset($this->_params[$key]) ? $this->_params[$key] : null;
 		return $param ? $param : $defaultValue;
 	}
+
 
 
 }

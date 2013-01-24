@@ -48,10 +48,13 @@ class BRestModelBehavior extends CActiveRecordBehavior
      * 
      * @return array()
      */
-    public function getAttributesForResponse()
+    public function getAttributesForResponse($options = array())
     {
         $owner = $this->getOwner();
         $params = Yii::app()->getController()->restRequest->getParams();
+        
+        $params = CMap::mergeArray($params,$options);
+        
         if(method_exists($owner, $this->ownerModelAPIResponseMethod)) {
             return $owner->getAPIResponseData($params);
         }

@@ -12,8 +12,32 @@ class BRestViewAction extends BRestAction
 	{
         parent::run();
         
-		$model = $this->getController()->getModel();
-        $responseParams[$this->restResponse->resultsNode] = array($model->getAttributesForResponse());
+        
+        $criteria = new CDbCriteria;
+        
+        $options = array();
+
+        if(isset($this->restParams['include'])) {
+            $includeArr = explode(",",$this->restParams['include']);
+            
+            $withArr = array();
+            if(in_array('organization', $includeArr)) {
+                $withArr[] = 'organization';
+            }
+            
+            // As of right now we don't have 'registration' relation defined on opportunity yet
+            //if(in_array('registration', $includeArr)) {
+                //$withArr[] = 'registration';
+            //}
+            
+            // set the CDbCriteria with property accordingly
+            $criteria->with = $withArr;
+            $options['includeArr'] = $includeArr;
+           
+        }
+        
+		$model = $this->getController()->getModel('', $criteria);
+        $responseParams[$this->restResponse->resultsNode] = array($model->getAttributesForResponse($options));
 		$this->restResponse->sendResponse(200, $responseParams);
 	}
 

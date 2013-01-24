@@ -77,7 +77,7 @@ abstract class BRestResponse
      */
 	public function getErrorMessage($status){
 		return array(
-            'status' => $status,
+            'http_status_code' => $status,
 			'title' => $this->getHttpStatusCodeMessage($status,'title'),
 			'message' => $this->getHttpStatusCodeMessage($status,'message'),
 		);
