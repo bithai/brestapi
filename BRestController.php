@@ -102,14 +102,3 @@ abstract class BRestController extends CExtController
 }
     
     
-       
-		return $model;
-	}
-
-
-
-}
-    
- 
-    
-    
